@@ -90,6 +90,20 @@ TEST(SerializerTestGroup, WrittenCountIsChanged)
     CHECK_EQUAL(5, serializer_written_bytes_count(&s));
 }
 
+TEST(SerializerTestGroup, IsProtectedAgainstBufferOverflow)
+{
+    // Keep one cell available
+    serializer_init(&s, myblock, sizeof myblock - 1);
+
+    // Write too much data
+    for (int i = 0; i < sizeof myblock; ++i) {
+        serializer_write_bytes(&s, "h", 1);
+    }
+
+    // Check that the last cell was not overwritten
+    CHECK_EQUAL(0, myblock[sizeof(myblock)-1]);
+}
+
 TEST_GROUP(CMPApiTestGroup)
 {
     cmp_ctx_t ctx;

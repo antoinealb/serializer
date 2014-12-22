@@ -15,8 +15,10 @@ void serializer_init(serializer_t *s, char *block, size_t block_size)
 
 void serializer_write_bytes(serializer_t *s, const char *data, size_t data_size)
 {
-    memcpy(s->_write_cursor, data, data_size);
-    s->_write_cursor += data_size;
+    if (serializer_written_bytes_count(s) + data_size <= s->_block_size) {
+        memcpy(s->_write_cursor, data, data_size);
+        s->_write_cursor += data_size;
+    }
 }
 
 void serializer_read_bytes(serializer_t *s, char *data, size_t max_size)
